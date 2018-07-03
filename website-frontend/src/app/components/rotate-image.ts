@@ -18,7 +18,8 @@ import { Component, Input, Output, ElementRef, EventEmitter } from '@angular/cor
                [class.rotate-90]="angle==90"
                [class.rotate-180]="angle==180"
                [class.rotate-270]="angle==270">
-             </div>`
+             </div>
+             <div class="color_values"></div>`
 })
 export class RotateImage {
 
@@ -108,12 +109,17 @@ export class RotateImage {
         // Need to convert back to linear.
         var gamma = 2.2;
 
-        var colorValuesElement = document.getElementById('color_values');
-        colorValuesElement.innerHTML =
-          "Linear RGB: [" +
-          Math.pow(r, gamma).toFixed(3) + ", " +
-          Math.pow(g, gamma).toFixed(3) + ", " +
-          Math.pow(b, gamma).toFixed(3) + "]";
+        var colorValuesElements = this.el.nativeElement.getElementsByClassName('color_values');
+        if (colorValuesElements.length > 0) {
+          var colorValuesElement = colorValuesElements[0];
+          if (colorValuesElement) {
+            colorValuesElement.innerHTML =
+              "Linear RGB: [" +
+              Math.pow(r, gamma).toFixed(3) + ", " +
+              Math.pow(g, gamma).toFixed(3) + ", " +
+              Math.pow(b, gamma).toFixed(3) + "]";
+          }
+        }
       }
     }
   }
