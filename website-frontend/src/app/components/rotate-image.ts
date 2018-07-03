@@ -12,6 +12,7 @@ import { Component, Input, Output, ElementRef, EventEmitter } from '@angular/cor
                style="vertical-align:middle;"
                (load)="newImageLoaded()"
                (click)="imgclick($event)"
+               (mousemove)="mouseOver($event)"
                [width]="width" 
                [src]="src"
                [class.rotate-90]="angle==90"
@@ -69,5 +70,51 @@ export class RotateImage {
 
   ngOnChanges() {
     this.updateDimensions();
+  }
+  
+  pixelValue(x : number, y : number) {
+    var imgElems = this.el.nativeElement.getElementsByTagName('img');
+    if (imgElems.length > 0) {
+      var img = imgElems[0];
+      if (img) {
+        // Convert to canvas to be able to sample pixel value. Unsure about the
+        // performance cost of drawing the image in the canvas.
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+        var pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+        return pixelData;
+      }
+    }
+    return null;
+  }
+
+  mouseOver(event) {
+    var imgElems = this.el.nativeElement.getElementsByTagName('img');
+    if (imgElems.length > 0) {
+      var img = imgElems[0];
+      if (img) {
+        var rect = event.target.getBoundingClientRect();
+        var x = event.clientX - rect.left; //x position within the element.
+        var y = event.clientY - rect.top;  //y position within the element.
+        var pixelData = this.pixelValue(x, y);
+        
+        var r = pixelData[0] / 255;
+        var g = pixelData[1] / 255;
+        var b = pixelData[2] / 255;
+
+        // Display pixels are in gamma space since it is a jpeg preview,
+        // Need to convert back to linear.
+        var gamma = 2.2;
+
+        var colorValuesElement = document.getElementById('color_values');
+        colorValuesElement.innerHTML =
+          "Linear RGB: [" +
+          Math.pow(r, gamma).toFixed(3) + ", " +
+          Math.pow(g, gamma).toFixed(3) + ", " +
+          Math.pow(b, gamma).toFixed(3) + "]";
+      }
+    }
   }
 }
