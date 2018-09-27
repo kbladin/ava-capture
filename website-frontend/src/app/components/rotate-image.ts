@@ -19,7 +19,7 @@ import { Component, Input, Output, ElementRef, EventEmitter } from '@angular/cor
                [class.rotate-180]="angle==180"
                [class.rotate-270]="angle==270">
              </div>
-             <div class="color_values"></div>`
+             <div class="color_values">Linear RGB:[0.00, 0.00, 0.00]</div>`
 })
 export class RotateImage {
 
@@ -99,7 +99,23 @@ export class RotateImage {
         var rect = event.target.getBoundingClientRect();
         var x = event.clientX - rect.left; //x position within the element.
         var y = event.clientY - rect.top;  //y position within the element.
-        var pixelData = this.pixelValue(x, y);
+
+        // Rotate the sample point
+        var xRot = x;
+        var yRot = y;
+        if (this.angle === 90) {
+          xRot = y;
+          yRot = -x + img.height; }
+        else if (this.angle === 180) {
+          xRot = -x + img.width;
+          yRot = -y + img.height;
+        }
+        else if(this.angle === 270) {
+          xRot = -y + img.width;
+          yRot = x;
+        }
+
+        var pixelData = this.pixelValue(xRot, yRot);
         
         var r = pixelData[0] / 255;
         var g = pixelData[1] / 255;
@@ -114,10 +130,10 @@ export class RotateImage {
           var colorValuesElement = colorValuesElements[0];
           if (colorValuesElement) {
             colorValuesElement.innerHTML =
-              "Linear RGB: [" +
-              Math.pow(r, gamma).toFixed(3) + ", " +
-              Math.pow(g, gamma).toFixed(3) + ", " +
-              Math.pow(b, gamma).toFixed(3) + "]";
+              "Linear RGB:[" +
+              Math.pow(r, gamma).toFixed(2) + ", " +
+              Math.pow(g, gamma).toFixed(2) + ", " +
+              Math.pow(b, gamma).toFixed(2) + "]";
           }
         }
       }
