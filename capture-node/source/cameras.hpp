@@ -160,6 +160,7 @@ public:
 	void set_display_focus_peak(bool e) { m_display_focus_peak = e&(!is_audio_only()); }
 	void set_display_overexposed(bool e) { m_display_overexposed = e&(!is_audio_only());; }
 	void set_display_histogram(bool e) { m_display_histogram = e&(!is_audio_only());; }
+	void set_preview_frame(int frame) { m_preview_frame = frame; }
 
 	void software_trigger() { m_waiting_for_trigger_hold = false;  m_waiting_for_trigger = false; }
 	void remove_recording_hold();
@@ -211,6 +212,7 @@ protected:
 	double m_waiting_delay;
 
 	int m_bayerpattern; // camera bayer pattern
+	int m_preview_frame;
 
 	color_correction::rgb_color_balance m_color_balance;
 

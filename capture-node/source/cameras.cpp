@@ -46,6 +46,7 @@ Camera::Camera()
 	m_color_need_debayer = false;
 
 	m_bayerpattern = cv::COLOR_BayerBG2RGB;
+	m_preview_frame = 0;
 
 	m_debug_in_capture_cycle = false;
 	m_debug_timings = false;
@@ -379,7 +380,7 @@ void Camera::got_image(cv::Mat img, double ts, int width, int height, int bitcou
 #endif // DEBUG_FRAME_TIMINGS				
 				
 			// Store first frame of each recordings
-			if (recording_first_frame.empty())
+			if (recording_first_frame.empty() && m_recorders[0]->frame_count() == m_preview_frame)
 			{
 				recording_first_frame = img.clone();
 				recording_first_frame_black_level = black_level;
@@ -489,7 +490,8 @@ void Camera::stop_recording()
 				if (m_color_need_debayer)
 					cv::cvtColor(recording_first_frame, tempImage, m_bayerpattern);
 
-				cv::resize(tempImage, tempImage, cv::Size(m_preview_width*2, m_preview_height*2), 0.0, 0.0, cv::INTER_AREA);
+				// Don't resize preview image
+				//cv::resize(tempImage, tempImage, cv::Size(m_preview_width*2, m_preview_height*2), 0.0, 0.0, cv::INTER_AREA);
 
 				if (m_color_need_debayer)
 					color_correction::apply(tempImage, m_color_balance, recording_first_frame_black_level);
