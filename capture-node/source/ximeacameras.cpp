@@ -397,6 +397,10 @@ void XimeaCamera::param_set(const char * name, float value)
 		// Update without stop/start, with direct update flag
 		set_param_float((std::string(name) + XI_PRMM_DIRECT_UPDATE).c_str(), value);
 	}
+	else if (strcmp(name, "preview_frame") == 0)
+	{
+		set_preview_frame(value);
+	}
 	else
 	{
 		// Stop acquisition before updating

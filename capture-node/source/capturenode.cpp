@@ -212,6 +212,13 @@ void CaptureNode::setGlobalParams(const std::string& json)
 	{
 		m_bitdepth_maximum = doc["bitdepth_single"].GetInt();
 	}
+	if (doc.HasMember("preview_frame"))
+	{
+		for (std::shared_ptr<Camera> camera : m_cameras)
+		{
+			camera->set_preview_frame(doc["preview_frame"].GetInt());
+		}
+	}
 
 	if (doc.HasMember("frequency"))
 	{
