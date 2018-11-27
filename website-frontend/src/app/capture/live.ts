@@ -134,6 +134,13 @@ export class LiveCapturePage {
     });
   }
 
+  batch_setPreviewFrame(value) {
+    // Set value on all cameras matching
+    this.batch_camera(camera => {
+      this.onChangeCameraParameter(value, 'preview_frame', camera.id);
+    });
+  }
+
   trackByNodeId(index: number, node) {
     return node.id;
   }

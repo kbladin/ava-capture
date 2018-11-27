@@ -179,6 +179,18 @@
         (onChanged)="batch_setGain($event)">
       </cam-param>
     </div>
+    <div class="split-columns">
+      <cam-param
+        name="Preview frame"
+        unit=""
+        min="0"
+        max="10.0"
+        [disabled]="camera_count<=0 || recording_single || recording || !write_access"
+        [editAlwaysVisible]=1
+        [value]="0"
+        (onChanged)="batch_setPreviewFrame($event)">
+      </cam-param>
+    </div>
   </div>
   </div>
 </section>
