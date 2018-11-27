@@ -126,7 +126,7 @@ public:
 	virtual void start_recording(const std::vector<std::string>& folders, bool wait_for_trigger, int nb_frames=-1);
 	virtual void stop_recording();
 
-	virtual bool set_bitdepth(int bitdepth) {}
+	virtual bool set_bitdepth(int bitdepth) { return false; }
 
 	virtual void set_roi(int x_min, int y_min, int x_max, int y_max) {}
 	virtual void reset_roi() {}
@@ -257,6 +257,23 @@ protected:
 private:
 	int m_id;
 	cv::VideoCapture m_cap;
+	boost::thread capture_thread;
+};
+
+class DummyCamera : public Camera
+{
+public:
+	DummyCamera(int id);
+
+	static std::vector<std::shared_ptr<Camera> > get_dummy_cameras(int count);
+
+protected:
+	void captureThread();
+	void start_capture() override;
+	void stop_capture() override;
+
+private:
+	int m_id;
 	boost::thread capture_thread;
 };
 
