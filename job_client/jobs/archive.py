@@ -154,6 +154,8 @@ class CopyFiles(BaseJob):
 
                     file_size = os.path.getsize(src)
 
+                    shutil.copyfile(src, dest_file)
+                    """
                     for copied in safeCopyFileGenerator(src, dest_file):
                         
                         # Update stats
@@ -168,7 +170,7 @@ class CopyFiles(BaseJob):
                             eta = nice_time(max(total_size-copied_size,0)/1024/1024/copy_speed) + ' remaining'
 
                         pipe.send('Copying file %d of %d (%d MB/s) %s' % (i+1,file_count,int(copy_speed), eta))
-
+                    """
                     if not os.path.exists(dest_file):
                         raise Exception('Destination file does not exist: %s' % dest_file)
                     if not os.path.getsize(dest_file) == file_size:
