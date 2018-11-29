@@ -70,16 +70,32 @@ class ExportTake(BaseJob):
 
 def safeCopyFileGenerator(src, dest, block_size = 64*1024*1024):  
 
+    maxReadAttempts = 10
+    readAttempt = 0
+
     if os.path.exists(dest):
         os.remove(dest)
 
     with open(src, 'rb') as fin:
         with open(dest, 'wb') as fout:
-            arr = fin.read(block_size)
-            while arr != "":
-                fout.write(arr)
-                yield len(arr)
-                arr = fin.read(block_size)
+            successfulRead = False
+            arr = None
+            while not successfulRead or arr != "":
+                try:
+                    arr = fin.read(block_size)
+                    fout.write(arr)
+                    yield len(arr)
+                except Exception as e:
+                    if readAttempt >= maxReadAttempts:
+                        raise e
+                    else:
+                        successfulRead = False
+                        readAttempt = readAttempt + 1
+                else:
+                    successfulRead = True
+                    readAttempt = 0
+                finally:
+                    pass
 
 def nice_time(s):
     hours = s // 3600 
@@ -179,8 +195,8 @@ if __name__ == "__main__":
 
     print('Test SafeCopyFile')
 
-    src = r'C:\ava_capture\20170508_094614\26681150_000.avi'
-    dest = r'C:\ava_capture\20170508_094614\26681150_000b.avi'
+    src = r'/media/box2_scan_data/ava_capture_raw_scans/20180327_155254/52480750_000.avi'
+    dest = r'/home/glab/52480750_000.avi'
 
     file_size = os.path.getsize(src)
     total = 0

@@ -12,12 +12,14 @@ import { Component, Input, Output, ElementRef, EventEmitter } from '@angular/cor
                style="vertical-align:middle;"
                (load)="newImageLoaded()"
                (click)="imgclick($event)"
+               (mousemove)="mouseOver($event)"
                [width]="width" 
                [src]="src"
                [class.rotate-90]="angle==90"
                [class.rotate-180]="angle==180"
                [class.rotate-270]="angle==270">
-             </div>`
+             </div>
+             <div class="color_values">Linear RGB:[0.00, 0.00, 0.00]</div>`
 })
 export class RotateImage {
 
@@ -69,5 +71,72 @@ export class RotateImage {
 
   ngOnChanges() {
     this.updateDimensions();
+  }
+  
+  pixelValue(x : number, y : number) {
+    var imgElems = this.el.nativeElement.getElementsByTagName('img');
+    if (imgElems.length > 0) {
+      var img = imgElems[0];
+      if (img) {
+        // Convert to canvas to be able to sample pixel value. Unsure about the
+        // performance cost of drawing the image in the canvas.
+        var canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+        var pixelData = canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+        return pixelData;
+      }
+    }
+    return null;
+  }
+
+  mouseOver(event) {
+    var imgElems = this.el.nativeElement.getElementsByTagName('img');
+    if (imgElems.length > 0) {
+      var img = imgElems[0];
+      if (img) {
+        var rect = event.target.getBoundingClientRect();
+        var x = event.clientX - rect.left; //x position within the element.
+        var y = event.clientY - rect.top;  //y position within the element.
+
+        // Rotate the sample point
+        var xRot = x;
+        var yRot = y;
+        if (this.angle === 90) {
+          xRot = y;
+          yRot = -x + img.height; }
+        else if (this.angle === 180) {
+          xRot = -x + img.width;
+          yRot = -y + img.height;
+        }
+        else if(this.angle === 270) {
+          xRot = -y + img.width;
+          yRot = x;
+        }
+
+        var pixelData = this.pixelValue(xRot, yRot);
+        
+        var r = pixelData[0] / 255;
+        var g = pixelData[1] / 255;
+        var b = pixelData[2] / 255;
+
+        // Display pixels are in gamma space since it is a jpeg preview,
+        // Need to convert back to linear.
+        var gamma = 2.2;
+
+        var colorValuesElements = this.el.nativeElement.getElementsByClassName('color_values');
+        if (colorValuesElements.length > 0) {
+          var colorValuesElement = colorValuesElements[0];
+          if (colorValuesElement) {
+            colorValuesElement.innerHTML =
+              "Linear RGB:[" +
+              Math.pow(r, gamma).toFixed(2) + ", " +
+              Math.pow(g, gamma).toFixed(2) + ", " +
+              Math.pow(b, gamma).toFixed(2) + "]";
+          }
+        }
+      }
+    }
   }
 }
