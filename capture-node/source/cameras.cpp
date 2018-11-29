@@ -490,8 +490,7 @@ void Camera::stop_recording()
 				if (m_color_need_debayer)
 					cv::cvtColor(recording_first_frame, tempImage, m_bayerpattern);
 
-				// Don't resize preview image
-				//cv::resize(tempImage, tempImage, cv::Size(m_preview_width*2, m_preview_height*2), 0.0, 0.0, cv::INTER_AREA);
+				cv::resize(tempImage, tempImage, cv::Size(m_preview_width*2, m_preview_height*2), 0.0, 0.0, cv::INTER_AREA);
 
 				if (m_color_need_debayer)
 					color_correction::apply(tempImage, m_color_balance, recording_first_frame_black_level);
